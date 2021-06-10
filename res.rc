@@ -1,0 +1,4 @@
+#include <windows.h>
+#include "resource.h"
+
+BMP1 BITMAP DISCARDABLE "bmp1.bmp"
