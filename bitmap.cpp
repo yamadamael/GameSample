@@ -5,11 +5,14 @@
 #include "bitmap.h"
 #include "Logger.h"
 
-// fileNameのBitmapファイルを読み込み、高さと幅、RGB情報をimg構造体に入れる
-Image *Read_Bmp(const char *fileName)
+bitmap::bitmap()
 {
-    Image *img = NULL;
+    img = NULL;
+}
 
+// fileNameのBitmapファイルを読み込み、高さと幅、RGB情報をimg構造体に入れる
+bitmap::Image *bitmap::Read_Bmp(const char *fileName)
+{
     FILE *fp;
     errno_t error = fopen_s(&fp, fileName, "r");
     if (error != 0)
@@ -87,16 +90,16 @@ Image *Read_Bmp(const char *fileName)
     return img;
 }
 
-int Write_Bmp(char *fileName, Image *img)
+int bitmap::Write_Bmp(char *fileName)
 {
     return 0;
 }
 
-int Draw_Bmp(HDC hdc, Image *img, int x, int y)
+int bitmap::Draw_Bmp(HDC hdc, int x, int y)
 {
     auto height = img->height;
     auto width = img->width;
-    LOG_INFO("%d, %d", height, width);
+    // LOG_INFO("%d, %d", height, width);
     for (unsigned int i = 0; i < height; i++)
     {
         for (unsigned int j = 0; j < width; j++)
@@ -111,10 +114,8 @@ int Draw_Bmp(HDC hdc, Image *img, int x, int y)
 
 // Imageを作成し、RGB情報もwidth*height分だけ動的に取得する
 // 成功すればポインタを、失敗すればNullを返す
-Image *Create_Image(int width, int height)
+bitmap::Image *bitmap::Create_Image(int width, int height)
 {
-    Image *img = NULL;
-
     // Image構造体メモリ確保
     if ((img = (Image *)malloc(sizeof(Image))) == NULL)
     {
@@ -135,8 +136,13 @@ Image *Create_Image(int width, int height)
     return img;
 }
 
+bitmap::Image *bitmap::Get_Image()
+{
+    return img;
+}
+
 // Imageを解放する
-void Free_Image(Image *img)
+void bitmap::Free_Image()
 {
     free(img->data);
     free(img);

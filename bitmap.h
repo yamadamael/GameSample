@@ -5,34 +5,45 @@
 #define INFOHEADERSIZE 40
 #define HEADERSIZE (FILEHEADERSIZE + INFOHEADERSIZE)
 
-typedef struct
+class bitmap
 {
-	unsigned char b;
-	unsigned char g;
-	unsigned char r;
-} Rgb;
+	typedef struct
+	{
+		unsigned char b;
+		unsigned char g;
+		unsigned char r;
+	} Rgb;
 
-typedef struct
-{
-	unsigned int height;
-	unsigned int width;
-	Rgb *data;
-} Image;
+	typedef struct
+	{
+		unsigned int height;
+		unsigned int width;
+		Rgb *data;
+	} Image;
 
-// 取得に成功すればポインタを、失敗すればNullを返す
-Image *Read_Bmp(const char *fileName);
+	Image *img;
 
-// 書き込みに成功すれば0を、失敗すれば1を返す
-int Write_Bmp(char *fileName, Image *img);
+public:
+	// コンストラクタ
+	bitmap();
 
-// 描画
-int Draw_Bmp(HDC hdc, Image *img, int x, int y);
+	// 取得に成功すればポインタを、失敗すればNullを返す
+	Image *Read_Bmp(const char *fileName);
 
-// Imageを作成し、RGB情報もwidth*height分だけ動的に取得する
-// 成功すればポインタを、失敗すればNullを返す
-Image *Create_Image(int width, int height);
+	// 書き込みに成功すれば0を、失敗すれば1を返す
+	int Write_Bmp(char *fileName);
 
-// Imageを解放する
-void Free_Image(Image *img);
+	// 描画
+	int Draw_Bmp(HDC hdc, int x, int y);
+
+	// Imageを作成し、RGB情報もwidth*height分だけ動的に取得する
+	// 成功すればポインタを、失敗すればNullを返す
+	Image *Create_Image(int width, int height);
+
+	Image *Get_Image();
+
+	// Imageを解放する
+	void Free_Image();
+};
 
 #endif /*__BITMAP_H_INCLUDED__*/

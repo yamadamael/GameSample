@@ -2,6 +2,13 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+// #include <time.h>
+#include <sys/timeb.h>
+#include <cstdio>
+#include <ctime>
 #include "Logger.h"
 
 std::string LogLevel::ToString(LogLevel::type logLevel)
@@ -41,7 +48,7 @@ void Logger::SetLogFilePath(const char *logFilePath)
 
 void Logger::Write(const LogLevel::type &logLevel, const char *fileName, const char *funcName, const int lineNum, const char *format, ...)
 {
-    char message[512] = {0};
+    char message[512] = { 0 };
     va_list args;
 
     va_start(args, format);
@@ -87,6 +94,7 @@ void Logger::write(const LogLevel::type &logLevel, const char *fileName, const c
         return;
 
     // ログを出力する処理
+    std::locale::global(std::locale("japanese"));
     std::ofstream ofs;
     ofs.open(this->m_logFilePath, std::ios::app);
 
@@ -94,7 +102,7 @@ void Logger::write(const LogLevel::type &logLevel, const char *fileName, const c
         << "[" << LogLevel::ToString(logLevel) << "]"
         << "[" << fileName << "]"
         << "[" << funcName << "]"
-        << "[" << lineNum << "]"
+        << "[" << lineNum << "] "
         << message
         << std::endl;
 
@@ -111,6 +119,14 @@ std::string Logger::getDateTimeNow() // const
     std::ostringstream oss;
 
     // 時刻を整形する処理
+    struct timeb tb;
+    struct tm now;
+    errno_t error;
+
+    ftime(&tb);
+    error = localtime_s(&now, &tb.time);
+
+    oss << std::put_time(&now, "%Y/%m/%d %H:%m:%S") << "." << std::setfill('0') << std::right << std::setw(3) << tb.millitm;
 
     return oss.str();
 }

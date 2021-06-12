@@ -1,56 +1,25 @@
-﻿#include <windows.h>
+﻿#include <thread>
+#include <chrono>
+#include <string>
+#include <functional>
+#include <windows.h>
+#include "define.h"
+#include "main.h"
 #include "Logger.h"
-#include "bitmap.h"
 #include "resource.h"
+#include "FrameRateCalculator.h"
 
-Image *img;
-int posX;
-HDC hmdc = NULL;
-HBITMAP hBitmap;
-RECT rc;
-HINSTANCE hinst;
+FrameRateCalculator fr;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    HDC hdc;
-    PAINTSTRUCT ps;
-
-    static HBITMAP hb;
-    static HDC mhdc;
-    static int width, height;
-
     switch (msg)
     {
     case WM_CREATE:
-        // ビットマップ直読み込み
-        hb = LoadBitmap(hinst, MAKEINTRESOURCE(BMP1));
-        BITMAP bp;
-        GetObject(hb, (int)sizeof(BITMAP), &bp);
-        width = bp.bmWidth;
-        height = bp.bmHeight;
-        mhdc = CreateCompatibleDC(NULL);
-        SelectObject(mhdc, hb);
-
-        img = Read_Bmp("bmp1.bmp");
-
-        // ウィンドウのデバイスコンテキストを取得
-        hdc = GetDC(hwnd);
-
-        // ウィンドウのデバイスコンテキストに関連付けられたメモリDCを作成
-        hmdc = CreateCompatibleDC(hdc);
-        // デバイスコンテキストと互換のあるビットマップを作成
-        GetClientRect(hwnd, &rc);
-        hBitmap = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
-
-        // メモリDCとビットマップを関連付け
-        SelectObject(hmdc, hBitmap);
-
-        // ウィンドウのデバイスコンテキストを解放
-        ReleaseDC(hwnd, hdc);
-
+        Create(hwnd);
         return 0;
     case WM_DESTROY:
-        Free_Image(img);
+        bmp->Free_Image();
 
         // メモリDCとビットマップオブジェクトの削除
         DeleteDC(hmdc);
@@ -60,48 +29,85 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         PostQuitMessage(0);
         return 0;
     case WM_PAINT:
-        /*
-        LOG_INFO("%d", msg);
-
-        hdc = BeginPaint(hwnd, &ps);
-        // for (auto iCount = 0; iCount < 1000; iCount++)
-        //     SetPixel(hdc, 10 + iCount, 10, 0xFF);
-        // for (auto i = 0; i < 200; i++)
-        //     SetPixel(hdc, 50 + i, 10, RGB(255, 0, 0));
-        LOG_INFO("%d", posX);
-        Draw_Bmp(hdc, img, 100 + posX, 100);
-        EndPaint(hwnd, &ps);
-        */
-
-        // ウィンドウのデバイスコンテキストを取得
-        hdc = BeginPaint(hwnd, &ps);
-
-        // ここからメモリDCへの描画
-        // posX += 10;
-        // Draw_Bmp(hmdc, img, 100 + posX, 100);
-
-        // メモリDCから画像を転送
-        // BitBlt(hdc, 0, 0, rc.right, rc.bottom, hmdc, 0, 0, SRCCOPY);
-
-        BitBlt(hdc, 0, 0, width, height, mhdc, 0, 0, SRCCOPY);
-
-        EndPaint(hwnd, &ps);
-
+        Draw(hwnd);
         return 0;
     }
     return DefWindowProc(hwnd, msg, wp, lp);
+}
+
+void Create(HWND hwnd)
+{
+    HDC hdc;
+
+    // ビットマップ直読み込み
+    hb = LoadBitmap(hinst, MAKEINTRESOURCE(BMP1));
+    BITMAP bp;
+    GetObject(hb, (int)sizeof(BITMAP), &bp);
+    width = bp.bmWidth;
+    height = bp.bmHeight;
+    mhdc = CreateCompatibleDC(NULL);
+    SelectObject(mhdc, hb);
+
+    bmp = new bitmap();
+    bmp->Read_Bmp("bmp1.bmp");
+
+    // ウィンドウのデバイスコンテキストを取得
+    hdc = GetDC(hwnd);
+
+    // ウィンドウのデバイスコンテキストに関連付けられたメモリDCを作成
+    hmdc = CreateCompatibleDC(hdc);
+    // デバイスコンテキストと互換のあるビットマップを作成
+    GetClientRect(hwnd, &rc);
+    hBitmap = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
+
+    // メモリDCとビットマップを関連付け
+    SelectObject(hmdc, hBitmap);
+
+    // ウィンドウのデバイスコンテキストを解放
+    ReleaseDC(hwnd, hdc);
+
+    DeleteObject(hBitmap);
+}
+
+void Draw(HWND hwnd)
+{
+    HDC hdc;
+    PAINTSTRUCT ps;
+
+    // ウィンドウのデバイスコンテキストを取得
+    hdc = BeginPaint(hwnd, &ps);
+
+    // ここからメモリDCへの描画
+    // bmp->Draw_Bmp(hmdc, 100, 100);
+
+    //fps描画
+    std::wstring *fpsStr = fr.update();
+    TextOut(hdc, 10, 30, fpsStr->c_str(), (int)fpsStr->size());
+
+    // メモリDCから画像を転送
+    // BitBlt(hdc, 0, 0, rc.right, rc.bottom, hmdc, 0, 0, SRCCOPY);
+
+    // Bitmapを直接書き込み
+    BitBlt(hdc, 100 + count++, 100, width, height, mhdc, 0, 0, SRCCOPY);
+
+    EndPaint(hwnd, &ps);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    PSTR lpCmdLine, int nCmdShow)
 {
     LOG_INFO("main start");
-    posX = 0;
     hinst = hInstance;
 
     HWND hwnd;
-    MSG msg;
+    MSG msg = {0};
     WNDCLASS winc;
+
+    for (auto i = 0; i < 100; i++)
+    {
+        // std::this_thread::sleep_for(std::chrono::microseconds(1000 * 1000));
+        LOG_INFO("sleep, %05d", i);
+    }
 
     winc.style = CS_HREDRAW | CS_VREDRAW;
     winc.lpfnWndProc = WndProc;
@@ -126,16 +132,99 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     if (hwnd == NULL)
         return -1;
 
-    if (1)
+    //現在時刻をマイクロ秒で取得
+    std::function<long long(void)> currentTimeMicro = []() {
+        std::chrono::system_clock::duration d = std::chrono::system_clock::now().time_since_epoch();
+        return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
+    };
+
+    //fps計算用オブジェクト
+    FrameRateCalculator fr;
+
+    //メッセージループ
+    // MSG msg = {};
+    int cnt = 0;
+    HDC hdc = GetDC(hwnd);
+
+    //60fpsで動作させる
+    int fps = FPS;
+
+    //現在時刻を取得(1秒=1000000)
+    long long end = currentTimeMicro();
+
+    //次の更新時間を計算(1秒/フレームレート)
+    long long next = end + (1000 * 1000 / fps);
+    while (true)
     {
-    }
-    else
-    {
+        //メッセージを取得したら1(true)を返し取得しなかった場合は0(false)を返す
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                //終了メッセージが来たらゲームループから抜ける
+                break;
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
+            //ゲームの処理を記述
+            //DirectXの描画処理などもここに記述する
+            //今回はGDIでカウントアップを描画する処理で動作テスト
+            // cnt++;
+            // std::wstring str = std::to_wstring(cnt);
+            // TextOut(hdc, 10, 10, str.c_str(), (int)str.size());
+
+            //重い処理があったとする
+            // std::this_thread::sleep_for(std::chrono::microseconds(100));
+            InvalidateRect(hwnd, NULL, false); //領域無効化
+            UpdateWindow(hwnd);                //再描画命令
+
+            //できるだけ60fpsになるようにスレッド待機
+            end = currentTimeMicro();
+            if (end < next)
+            {
+                //更新時間まで待機
+                auto waitFrame = (next - end);
+                std::this_thread::sleep_for(std::chrono::microseconds(waitFrame));
+                // LOG_INFO("%4lld, %lld, %lld, %lld", waitFrame, next, end, next - end);
+
+                //次の更新時間を計算(1秒/フレームレート加算)
+                next += (1000 * 1000 / fps);
+            }
+            else
+            {
+                LOG_INFO("xxxx, %lld, %lld, %lld", next, end, next - end);
+
+                //更新時間を過ぎた場合は現在時刻から次の更新時間を計算
+                next = end + (1000 * 1000 / fps);
+            }
+        }
     }
 
-    while (GetMessage(&msg, NULL, 0, 0))
-    {
-        DispatchMessage(&msg);
-    }
+    // int cnt = 0;
+    // HDC hdc = GetDC(hwnd);
+    // while (msg.message != WM_QUIT)
+    // {
+    //     // メッセージを取得したら1を返し、取得しなかった場合は、0を返す
+    //     if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    //     {
+    //         TranslateMessage(&msg);
+    //         DispatchMessage(&msg);
+    //         // LOG_INFO("%s, %d", "こんちわ", msg.message);
+    //     }
+    //     else
+    //     {
+    //         // LOG_INFO("%s", "わちんこ");
+    //         // cnt++;
+    //         // TCHAR buf[10];
+    //         // wsprintf(buf, L"%d", cnt);
+    //         // TextOut(hdc, 10, 10, buf, sizeof(buf));
+    //         // std::this_thread::sleep_for(std::chrono::milliseconds(17));
+    //     }
+    // }
+
+    ReleaseDC(hwnd, hdc);
     return msg.wParam;
 }
