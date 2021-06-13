@@ -10,6 +10,13 @@ long long FrameRateCalculator::currentTime()
     return std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
 }
 
+//現在時刻を取得する関数
+long long FrameRateCalculator::currentTimeMicro()
+{
+    std::chrono::system_clock::duration d = std::chrono::system_clock::now().time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
+}
+
 //フレームレートの計算と結果文字列を構築する
 void FrameRateCalculator::updateStr()
 {

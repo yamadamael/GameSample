@@ -2,8 +2,10 @@
 
 #include <windows.h>
 #include "bitmap.h"
+#include "FrameRateCalculator.h"
 
 bitmap *bmp;
+FrameRateCalculator *fr;
 
 HDC hmdc = NULL;
 HBITMAP hBitmap;
@@ -18,3 +20,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 void Create(HWND hwnd);
 void Draw(HWND hwnd);
+
+int GetCpuMax()
+{
+    SYSTEM_INFO sys;
+    GetSystemInfo(&sys);
+    return sys.dwNumberOfProcessors;
+}

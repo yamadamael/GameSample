@@ -9,8 +9,6 @@
 #include "resource.h"
 #include "FrameRateCalculator.h"
 
-FrameRateCalculator fr;
-
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
@@ -34,6 +32,8 @@ void Create(HWND hwnd)
 {
     bmp = new bitmap();
     bmp->Read_Bmp("bmp1.bmp");
+
+    fr = new FrameRateCalculator();
 
     // 裏画面
     {
@@ -74,7 +74,7 @@ void Draw(HWND hwnd)
     }
 
     //fps描画
-    std::wstring *fpsStr = fr.update();
+    std::wstring *fpsStr = fr->update();
     TextOut(hmdc, 10, 30, fpsStr->c_str(), (int)fpsStr->size());
 
     BitBlt(hdc, 0, 0, rc.right, rc.bottom, hmdc, 0, 0, SRCCOPY);
@@ -87,15 +87,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
     LOG_INFO("main start");
 
+    // 使用CPUを固定
+    HANDLE process = GetCurrentProcess();
+    DWORD_PTR processAffinityMask = 1;
+    bool success = SetProcessAffinityMask(process, processAffinityMask);
+    LOG_INFO("cpu%d: %s", processAffinityMask, success ? "true" : "false");
+    LOG_INFO("cpu count: %d", GetCpuMax());
+
     HWND hwnd;
     MSG msg = {0};
     WNDCLASS winc;
-
-    for (auto i = 0; i < 100; i++)
-    {
-        // std::this_thread::sleep_for(std::chrono::microseconds(1000 * 1000));
-        // LOG_INFO("sleep, %05d", i);
-    }
 
     winc.style = CS_HREDRAW | CS_VREDRAW;
     winc.lpfnWndProc = WndProc;
@@ -120,17 +121,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     if (hwnd == NULL)
         return -1;
 
-    //現在時刻をマイクロ秒で取得
-    std::function<long long(void)> currentTimeMicro = []() {
-        std::chrono::system_clock::duration d = std::chrono::system_clock::now().time_since_epoch();
-        return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
-    };
-
-    //fps計算用オブジェクト
-    FrameRateCalculator fr;
-
     //メッセージループ
-    // MSG msg = {};
     int cnt = 0;
     HDC hdc = GetDC(hwnd);
 
@@ -138,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     int fps = FPS;
 
     //現在時刻を取得(1秒=1000000)
-    long long end = currentTimeMicro();
+    long long end = FrameRateCalculator::currentTimeMicro();
 
     //次の更新時間を計算(1秒/フレームレート)
     long long next = end + (1000 * 1000 / fps);
@@ -170,7 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             UpdateWindow(hwnd);                //再描画命令
 
             //できるだけ60fpsになるようにスレッド待機
-            end = currentTimeMicro();
+            end = FrameRateCalculator::currentTimeMicro();
             if (end < next)
             {
                 //更新時間まで待機
@@ -190,28 +181,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             }
         }
     }
-
-    // int cnt = 0;
-    // HDC hdc = GetDC(hwnd);
-    // while (msg.message != WM_QUIT)
-    // {
-    //     // メッセージを取得したら1を返し、取得しなかった場合は、0を返す
-    //     if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-    //     {
-    //         TranslateMessage(&msg);
-    //         DispatchMessage(&msg);
-    //         // LOG_INFO("%s, %d", "こんちわ", msg.message);
-    //     }
-    //     else
-    //     {
-    //         // LOG_INFO("%s", "わちんこ");
-    //         // cnt++;
-    //         // TCHAR buf[10];
-    //         // wsprintf(buf, L"%d", cnt);
-    //         // TextOut(hdc, 10, 10, buf, sizeof(buf));
-    //         // std::this_thread::sleep_for(std::chrono::milliseconds(17));
-    //     }
-    // }
 
     ReleaseDC(hwnd, hdc);
     return msg.wParam;
