@@ -5,6 +5,10 @@
 
 bitmap *bmp;
 
+HDC hmdc = NULL;
+HBITMAP hBitmap;
+RECT rc;
+
 int count = 0;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);

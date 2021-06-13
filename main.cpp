@@ -32,10 +32,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void Create(HWND hwnd)
 {
-    HDC hdc;
-
     bmp = new bitmap();
     bmp->Read_Bmp("bmp1.bmp");
+
+    // 裏画面
+    {
+        // ウィンドウのデバイスコンテキストを取得
+        HDC hdc = GetDC(hwnd);
+
+        // ウィンドウのデバイスコンテキストに関連付けられたメモリDCを作成
+        hmdc = CreateCompatibleDC(hdc);
+
+        // デバイスコンテキストと互換のあるビットマップを作成
+        GetClientRect(hwnd, &rc);
+
+        hBitmap = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
+
+        // メモリDCとビットマップを関連付け
+        SelectObject(hmdc, hBitmap);
+
+        // ウィンドウのデバイスコンテキストを解放
+        ReleaseDC(hwnd, hdc);
+
+        DeleteObject(hBitmap);
+    }
 }
 
 void Draw(HWND hwnd)
@@ -47,11 +67,17 @@ void Draw(HWND hwnd)
     hdc = BeginPaint(hwnd, &ps);
 
     // ここからDCへの描画
-    bmp->Draw_Bmp(hdc, 100, 100);
+    auto count = 100;
+    for (auto i = 0; i < count; i++)
+    {
+        bmp->Draw_Bmp(hmdc, 100, 100);
+    }
 
     //fps描画
     std::wstring *fpsStr = fr.update();
-    TextOut(hdc, 10, 30, fpsStr->c_str(), (int)fpsStr->size());
+    TextOut(hmdc, 10, 30, fpsStr->c_str(), (int)fpsStr->size());
+
+    BitBlt(hdc, 0, 0, rc.right, rc.bottom, hmdc, 0, 0, SRCCOPY);
 
     EndPaint(hwnd, &ps);
 }
