@@ -21,11 +21,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DESTROY:
         bmp->Free_Image();
 
-        // メモリDCとビットマップオブジェクトの削除
-        DeleteDC(hmdc);
-        DeleteObject(hBitmap);
-        DeleteObject(hb);
-
         PostQuitMessage(0);
         return 0;
     case WM_PAINT:
@@ -39,34 +34,8 @@ void Create(HWND hwnd)
 {
     HDC hdc;
 
-    // ビットマップ直読み込み
-    hb = LoadBitmap(hinst, MAKEINTRESOURCE(BMP1));
-    BITMAP bp;
-    GetObject(hb, (int)sizeof(BITMAP), &bp);
-    width = bp.bmWidth;
-    height = bp.bmHeight;
-    mhdc = CreateCompatibleDC(NULL);
-    SelectObject(mhdc, hb);
-
     bmp = new bitmap();
     bmp->Read_Bmp("bmp1.bmp");
-
-    // ウィンドウのデバイスコンテキストを取得
-    hdc = GetDC(hwnd);
-
-    // ウィンドウのデバイスコンテキストに関連付けられたメモリDCを作成
-    hmdc = CreateCompatibleDC(hdc);
-    // デバイスコンテキストと互換のあるビットマップを作成
-    GetClientRect(hwnd, &rc);
-    hBitmap = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
-
-    // メモリDCとビットマップを関連付け
-    SelectObject(hmdc, hBitmap);
-
-    // ウィンドウのデバイスコンテキストを解放
-    ReleaseDC(hwnd, hdc);
-
-    DeleteObject(hBitmap);
 }
 
 void Draw(HWND hwnd)
@@ -77,18 +46,12 @@ void Draw(HWND hwnd)
     // ウィンドウのデバイスコンテキストを取得
     hdc = BeginPaint(hwnd, &ps);
 
-    // ここからメモリDCへの描画
-    // bmp->Draw_Bmp(hmdc, 100, 100);
+    // ここからDCへの描画
+    bmp->Draw_Bmp(hdc, 100, 100);
 
     //fps描画
     std::wstring *fpsStr = fr.update();
     TextOut(hdc, 10, 30, fpsStr->c_str(), (int)fpsStr->size());
-
-    // メモリDCから画像を転送
-    // BitBlt(hdc, 0, 0, rc.right, rc.bottom, hmdc, 0, 0, SRCCOPY);
-
-    // Bitmapを直接書き込み
-    BitBlt(hdc, 100 + count++, 100, width, height, mhdc, 0, 0, SRCCOPY);
 
     EndPaint(hwnd, &ps);
 }
@@ -97,7 +60,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    PSTR lpCmdLine, int nCmdShow)
 {
     LOG_INFO("main start");
-    hinst = hInstance;
 
     HWND hwnd;
     MSG msg = {0};
@@ -106,7 +68,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     for (auto i = 0; i < 100; i++)
     {
         // std::this_thread::sleep_for(std::chrono::microseconds(1000 * 1000));
-        LOG_INFO("sleep, %05d", i);
+        // LOG_INFO("sleep, %05d", i);
     }
 
     winc.style = CS_HREDRAW | CS_VREDRAW;
@@ -195,7 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             }
             else
             {
-                LOG_INFO("xxxx, %lld, %lld, %lld", next, end, next - end);
+                // LOG_INFO("xxxx, %lld, %lld, %lld", next, end, next - end);
 
                 //更新時間を過ぎた場合は現在時刻から次の更新時間を計算
                 next = end + (1000 * 1000 / fps);

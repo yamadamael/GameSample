@@ -8,6 +8,7 @@
 bitmap::bitmap()
 {
     img = NULL;
+    bmpInfo = new BITMAPINFO();
 }
 
 // fileNameのBitmapファイルを読み込み、高さと幅、RGB情報をimg構造体に入れる
@@ -72,19 +73,24 @@ bitmap::Image *bitmap::Read_Bmp(const char *fileName)
         fread(bmp_line_data, 1, real_width, fp);
         for (unsigned int j = 0; j < width; j++)
         {
-            img->data[(height - i - 1) * width + j].b = bmp_line_data[j * 3];
-            img->data[(height - i - 1) * width + j].g = bmp_line_data[j * 3 + 1];
-            img->data[(height - i - 1) * width + j].r = bmp_line_data[j * 3 + 2];
-            // if (bmp_line_data[j * 3] != 255 || bmp_line_data[j * 3 + 1] != 255 || bmp_line_data[j * 3 + 2] != 255)
-            // {
-            //     LOG_INFO("(%3d, %3d) %02x%02x%02x, ", j, i, bmp_line_data[j * 3], bmp_line_data[j * 3 + 1], bmp_line_data[j * 3 + 2])
-            // }
+            auto pos = i * width + j;
+            img->data[pos].b = bmp_line_data[j * 3];
+            img->data[pos].g = bmp_line_data[j * 3 + 1];
+            img->data[pos].r = bmp_line_data[j * 3 + 2];
         }
     }
 
     // 解放
     free(bmp_line_data);
     fclose(fp);
+
+    // DIBの情報を設定する
+    bmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmpInfo->bmiHeader.biWidth = width;
+    bmpInfo->bmiHeader.biHeight = height;
+    bmpInfo->bmiHeader.biPlanes = 1;
+    bmpInfo->bmiHeader.biBitCount = 32;
+    bmpInfo->bmiHeader.biCompression = BI_RGB;
 
     LOG_INFO("end");
     return img;
@@ -99,15 +105,27 @@ int bitmap::Draw_Bmp(HDC hdc, int x, int y)
 {
     auto height = img->height;
     auto width = img->width;
-    // LOG_INFO("%d, %d", height, width);
+
+    // メモリ確保
+    LPDWORD lpPixel;
+    lpPixel = (LPDWORD)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, height * width * 4);
+
     for (unsigned int i = 0; i < height; i++)
     {
+        auto w = i * width;
         for (unsigned int j = 0; j < width; j++)
         {
-            Rgb rgb = img->data[i * width + j];
-            SetPixel(hdc, x + j, y + i, RGB(rgb.r, rgb.g, rgb.b));
+            bitmap::Rgb rgb = img->data[w + j];
+            int color = (rgb.r << (8 * 2)) | (rgb.g << (8 * 1)) | rgb.b;
+            lpPixel[w + j] = color;
         }
     }
+
+    // 描画
+    StretchDIBits(hdc, x, y, width, height, 0, 0, width, height, lpPixel, bmpInfo, DIB_RGB_COLORS, SRCCOPY);
+
+    // メモリ解放
+    HeapFree(GetProcessHeap(), 0, lpPixel);
 
     return 0;
 }

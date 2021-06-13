@@ -23,6 +23,8 @@ class bitmap
 
 	Image *img;
 
+	BITMAPINFO *bmpInfo;
+
 public:
 	// コンストラクタ
 	bitmap();

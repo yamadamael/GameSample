@@ -4,14 +4,6 @@
 #include "bitmap.h"
 
 bitmap *bmp;
-HDC hmdc = NULL;
-HBITMAP hBitmap;
-RECT rc;
-HINSTANCE hinst;
-
-HBITMAP hb;
-HDC mhdc;
-int width, height;
 
 int count = 0;
 
