@@ -112,7 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         return -1;
 
     hwnd = CreateWindow(
-        TEXT("KITTY"), TEXT("Kitty on your lap"),
+        TEXT("KITTY"), TEXT("GameSample"),
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         CW_USEDEFAULT, CW_USEDEFAULT,

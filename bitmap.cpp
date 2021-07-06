@@ -108,7 +108,7 @@ int bitmap::Draw_Bmp(HDC hdc, int x, int y)
 
     // メモリ確保
     LPDWORD lpPixel;
-    lpPixel = (LPDWORD)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, height * width * 4);
+    lpPixel = (LPDWORD)HeapAlloc(GetProcessHeap(), (DWORD)HEAP_ZERO_MEMORY, height * width * 4);
 
     for (unsigned int i = 0; i < height; i++)
     {
