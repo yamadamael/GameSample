@@ -145,14 +145,21 @@
     <ClCompile Include="FrameRateCalculator.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="EulerAngles.h" />
     <ClInclude Include="FrameRateCalculator.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="MathUtil.h" />
+    <ClInclude Include="Matrix4x3.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RotationMatrix.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res.rc" />
