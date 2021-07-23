@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class Quaternion;
 class Matrix4x3;
@@ -27,8 +27,8 @@ public:
     // 四元数をオイラー角形式に変換する
     // 入力される四元数は、その名前が示すようにオブジェクト空間から慣性空間、
     // または、慣性空間からオブジェクト空間への回転を実行するものとする
-    void fromObjectToIntertialQuaternion(const Quaternion &q);
-    void fromIntertialToObjectQuaternion(const Quaternion &q);
+    void fromObjectToInertialQuaternion(const Quaternion &q);
+    void fromInertialToObjectQuaternion(const Quaternion &q);
 
     // 座標変換行列をオイラー角形式に変換する
     // 入力される行列は、その名前が示すようにオブジェクト空間から慣性空間、

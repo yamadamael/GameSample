@@ -56,7 +56,7 @@ void EulerAngles::canonize()
 
 // オイラー角をセットアップする
 // オブジェクト空間->慣性空間への回転四元数が与えられる
-void EulerAngles::fromObjectToIntertialQuaternion(const Quaternion &q)
+void EulerAngles::fromObjectToInertialQuaternion(const Quaternion &q)
 {
     // sin(pitch)を取り出す
     float sp = -2.0f * (q.y * q.z - q.w * q.x);
@@ -80,7 +80,7 @@ void EulerAngles::fromObjectToIntertialQuaternion(const Quaternion &q)
 
 // オイラー角をセットアップする
 // 慣性空間->オブジェクト空間への回転四元数が与えられる
-void EulerAngles::fromIntertialToObjectQuaternion(const Quaternion &q)
+void EulerAngles::fromInertialToObjectQuaternion(const Quaternion &q)
 {
     // sin(pitch)を取り出す
     float sp = -2.0f * (q.y * q.z - q.w * q.x);
