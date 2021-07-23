@@ -166,7 +166,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             {
                 //更新時間まで待機
                 auto waitFrame = (next - end);
-                std::this_thread::sleep_for(std::chrono::microseconds(waitFrame));
+                // std::this_thread::sleep_for(std::chrono::microseconds(waitFrame));
                 // LOG_INFO("%4lld, %lld, %lld, %lld", waitFrame, next, end, next - end);
 
                 //次の更新時間を計算(1秒/フレームレート加算)
