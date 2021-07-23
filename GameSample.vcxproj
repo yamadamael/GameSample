@@ -147,6 +147,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtil.cpp" />
+    <ClCompile Include="Matrix4x3.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RotationMatrix.cpp" />
   </ItemGroup>

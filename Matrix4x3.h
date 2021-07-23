@@ -45,7 +45,7 @@ public:
     void setupScale(const Vector3 &s);
 
     // 任意の軸に沿ってスケーリングを実行する行列をセットアップする
-    void setupScaleAlongAxis(const Vector3 &axiz, float k);
+    void setupScaleAlongAxis(const Vector3 &axis, float k);
 
     // せん断を実行する行列をセットアップする
     void setupShear(int axis, float s, float t);
@@ -54,7 +54,7 @@ public:
     void setupProject(const Vector3 &n);
 
     // 基本面に平行な面に関してのリフレクションを実行する行列をセットアップする
-    void setupReflect(int axiz, float k = 0.0f);
+    void setupReflect(int axis, float k = 0.0f);
 
     // 原点を通る任意の平面に関するリフレクションを実行する行列をセットアップする
     void setupReflect(const Vector3 &n);
@@ -78,6 +78,6 @@ Matrix4x3 inverse(const Matrix4x3 &m);
 // 行列から平行移動部分を取り出す
 Vector3 getTranslation(const Matrix4x3 &m);
 
-// ローカル->親、または親->ローカルへの行列から位置と方向を取り出す
+// 親->ローカル、またはローカル->親への行列から位置と方向を取り出す
 Vector3 getPositionFromParentToLocalMatrix(const Matrix4x3 &m);
 Vector3 getPositionFromLocalToParentMatrix(const Matrix4x3 &m);
