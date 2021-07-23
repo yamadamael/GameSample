@@ -1,4 +1,4 @@
-#include <math.h>
+﻿#include <math.h>
 #include "MathUtil.h"
 
 // 適切に2Piの倍数を加えることで角度を-Pi~Piの範囲にラップする
