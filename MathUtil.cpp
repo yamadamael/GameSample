@@ -5,7 +5,7 @@
 extern float wrapPi(float theta)
 {
     theta += kPi;
-    theta -= floor(theta * k1Over2Pi) * k2Pi;
+    theta -= floorf(theta * k1Over2Pi) * k2Pi;
     theta -= kPi;
     return theta;
 }
@@ -24,5 +24,5 @@ extern float safeAcos(float x)
     {
         return 0.0f;
     }
-    return acos(x);
+    return acosf(x);
 }

@@ -376,7 +376,7 @@ void Matrix4x3::setupProject(const Vector3 &n)
 //  2: 面y=kに関するリフレクション
 //  3: 面z=kに関するリフレクション
 // 平行移動は適切に設定される
-void Matrix4x3::setupReflect(int axis, float k = 0.0f)
+void Matrix4x3::setupReflect(int axis, float k)
 {
     switch (axis)
     {

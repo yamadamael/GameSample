@@ -64,17 +64,17 @@ void EulerAngles::fromObjectToInertialQuaternion(const Quaternion &q)
     // ジンバルロックチェック
     if (fabs(sp) > 0.999f)
     {
-        heading = atan2(-q.x * q.z + q.w * q.y, 0.5f - q.y * q.y - q.z * q.z);
+        heading = atan2f(-q.x * q.z + q.w * q.y, 0.5f - q.y * q.y - q.z * q.z);
         pitch = kPiOver2 * sp;
         // ヘディングを計算し、バンクを0にする
         bank = 0.0f;
     }
     else
     {
-        heading = atan2(q.x * q.z + q.w * q.y, 0.5f - q.x * q.x - q.y * q.y);
+        heading = atan2f(q.x * q.z + q.w * q.y, 0.5f - q.x * q.x - q.y * q.y);
         // sin(pitch)<1 -> cos(pitch) != 0 のためsafeAcosは使わなくてよい
-        pitch = asin(sp);
-        bank = atan2(q.x * q.y + q.w * q.z, 0.5f - q.x * q.x - q.z * q.z);
+        pitch = asinf(sp);
+        bank = atan2f(q.x * q.y + q.w * q.z, 0.5f - q.x * q.x - q.z * q.z);
     }
 }
 
@@ -89,16 +89,16 @@ void EulerAngles::fromInertialToObjectQuaternion(const Quaternion &q)
     if (fabs(sp) > 0.999f)
     {
         // ヘディングを計算し、バンクを0にする
-        heading = atan2(-q.x * q.z - q.w * q.y, 0.5f - q.y * q.y - q.z * q.z);
+        heading = atan2f(-q.x * q.z - q.w * q.y, 0.5f - q.y * q.y - q.z * q.z);
         pitch = kPiOver2 * sp;
         bank = 0.0f;
     }
     else
     {
-        heading = atan2(q.x * q.z - q.w * q.y, 0.5f - q.x * q.x - q.y * q.y);
+        heading = atan2f(q.x * q.z - q.w * q.y, 0.5f - q.x * q.x - q.y * q.y);
         // sin(pitch)<1 -> cos(pitch) != 0 のためsafeAcosは使わなくてよい
-        pitch = asin(sp);
-        bank = atan2(q.x * q.y - q.w * q.z, 0.5f - q.x * q.x - q.z * q.z);
+        pitch = asinf(sp);
+        bank = atan2f(q.x * q.y - q.w * q.z, 0.5f - q.x * q.x - q.z * q.z);
     }
 }
 
@@ -113,15 +113,15 @@ void EulerAngles::fromObjectToWorldMatrix(const Matrix4x3 &m)
     // ジンバルロックチェック
     if (fabs(sp) > 0.999f)
     {
-        heading = atan2(-m.m23, m.m11);
+        heading = atan2f(-m.m23, m.m11);
         pitch = kPiOver2 * sp;
         bank = 0.0f;
     }
     else
     {
-        heading = atan2(m.m31, m.m33);
-        pitch = asin(sp);
-        bank = atan2(m.m12, m.m22);
+        heading = atan2f(m.m31, m.m33);
+        pitch = asinf(sp);
+        bank = atan2f(m.m12, m.m22);
     }
 }
 
@@ -136,15 +136,15 @@ void EulerAngles::fromWorldToObjectMatrix(const Matrix4x3 &m)
     // ジンバルロックチェック
     if (fabs(sp) > 0.999f)
     {
-        heading = atan2(-m.m31, m.m11);
+        heading = atan2f(-m.m31, m.m11);
         pitch = kPiOver2 * sp;
         bank = 0.0f;
     }
     else
     {
-        heading = atan2(m.m13, m.m33);
-        pitch = asin(sp);
-        bank = atan2(m.m21, m.m22);
+        heading = atan2f(m.m13, m.m33);
+        pitch = asinf(sp);
+        bank = atan2f(m.m21, m.m22);
     }
 }
 
@@ -159,14 +159,14 @@ void EulerAngles::fromRotationMatrix(const RotationMatrix &m)
     // ジンバルロックチェック
     if (fabs(sp) > 0.999f)
     {
-        heading = atan2(-m.m31, m.m11);
+        heading = atan2f(-m.m31, m.m11);
         pitch = kPiOver2 * sp;
         bank = 0.0f;
     }
     else
     {
-        heading = atan2(m.m13, m.m33);
-        pitch = asin(sp);
-        bank = atan2(m.m21, m.m22);
+        heading = atan2f(m.m13, m.m33);
+        pitch = asinf(sp);
+        bank = atan2f(m.m21, m.m22);
     }
 }

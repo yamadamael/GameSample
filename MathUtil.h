@@ -20,6 +20,6 @@ extern float safeAcos(float x);
 // 2つの値を別に計算するよりも速く計算することができる
 inline void sinCos(float *returnSin, float *returnCos, float theta)
 {
-    *returnSin = sin(theta);
-    *returnCos = cos(theta);
+    *returnSin = sinf(theta);
+    *returnCos = cosf(theta);
 }

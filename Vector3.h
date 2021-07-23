@@ -7,7 +7,12 @@ public:
     float x, y, z;
 
     // コンストラクタ
-    Vector3() {}
+    Vector3()
+    {
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+    }
 
     // コピーコンストラクタ(Vector3)
     Vector3(const Vector3 &a) : x(a.x), y(a.y), z(a.z) {}

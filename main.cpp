@@ -183,5 +183,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     ReleaseDC(hwnd, hdc);
-    return msg.wParam;
+    return (int)msg.wParam;
 }
