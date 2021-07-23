@@ -27,14 +27,14 @@ public:
     void setToRotateAboutAxis(const Vector3 &axis, float theta);
 
     // オブジェクト空間<->慣性空間の回転を実行するようにセットアップする
-    void setToRotateObjectToIntertial(const EulerAngles &orientation);
-    void setToRotateIntertialToObject(const EulerAngles &orientation);
+    void setToRotateObjectToInertial(const EulerAngles &orientation);
+    void setToRotateInertialToObject(const EulerAngles &orientation);
 
     // 外積
     Quaternion operator*(const Quaternion &a) const;
 
     // 代入を伴う乗算:C++の慣習による
-    Quaternion operator*=(const Quaternion &a) const;
+    Quaternion &operator*=(const Quaternion &a);
 
     // 正規化
     void normalize();
@@ -51,9 +51,9 @@ extern const Quaternion kQuaternionIdentity;
 extern float dotProduct(const Quaternion &a, const Quaternion &b);
 
 // 球面線形補完
-extern Quaternion slerp(const Quaternion &p, const Quaternion &q, float t);
+extern Quaternion slerp(const Quaternion &q0, const Quaternion &q1, float t);
 
-// 四元数の結合
+// 四元数の共役
 extern Quaternion conjugate(const Quaternion &q);
 
 // 四元数の累乗
