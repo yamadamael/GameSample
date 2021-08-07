@@ -8,6 +8,9 @@
 #include "Logger.h"
 #include "resource.h"
 #include "FrameRateCalculator.h"
+#include "GameObject.h"
+#include "GameManager.h"
+#include "Vector3.h"
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -17,7 +20,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         Create(hwnd);
         return 0;
     case WM_DESTROY:
-        bmp->Free_Image();
+        go->Destroy();
+
+        DeleteDC(hmdc);
+        hmdc = NULL;
 
         PostQuitMessage(0);
         return 0;
@@ -30,8 +36,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void Create(HWND hwnd)
 {
-    bmp = new bitmap();
-    bmp->Read_Bmp("bmp1.bmp");
+    spriteManager = new SpriteManager();
+
+    go = new GameObject("Root");
+    go->SetPosition(new Vector3(100, 100, 0));
+    go->ReadBmp("bmp1.bmp");
+
+    GameObject *child = new GameObject("Child1");
+    child->SetPosition(new Vector3(100, 100, 0));
+    child->ReadBmp("bmp1.bmp");
+    child->SetParent(go);
 
     fr = new FrameRateCalculator();
 
@@ -62,15 +76,22 @@ void Draw(HWND hwnd)
 {
     HDC hdc;
     PAINTSTRUCT ps;
+    HBRUSH hBrush, hOldBrush;
 
     // ウィンドウのデバイスコンテキストを取得
     hdc = BeginPaint(hwnd, &ps);
 
+    // 背景
+    hBrush = GetSysColorBrush(COLOR_WINDOW);
+    hOldBrush = (HBRUSH)SelectObject(hmdc, hBrush);
+    PatBlt(hmdc, 0, 0, rc.right, rc.bottom, PATCOPY);
+    SelectObject(hmdc, hOldBrush);
+
     // ここからDCへの描画
-    auto count = 100;
+    auto count = 1;
     for (auto i = 0; i < count; i++)
     {
-        bmp->Draw_Bmp(hmdc, 100, 100);
+        go->Draw(hmdc);
     }
 
     //fps描画

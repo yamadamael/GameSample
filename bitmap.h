@@ -5,47 +5,54 @@
 #define INFOHEADERSIZE 40
 #define HEADERSIZE (FILEHEADERSIZE + INFOHEADERSIZE)
 
+#include <windows.h>
+
+class Matrix4x3;
+
 class bitmap
 {
-	typedef struct
-	{
-		unsigned char b;
-		unsigned char g;
-		unsigned char r;
-	} Rgb;
+public:
+    typedef struct
+    {
+        unsigned char b;
+        unsigned char g;
+        unsigned char r;
+    } Rgb;
 
-	typedef struct
-	{
-		unsigned int height;
-		unsigned int width;
-		Rgb *data;
-	} Image;
+    typedef struct
+    {
+        const char *path;
+        unsigned int height;
+        unsigned int width;
+        Rgb *data;
+    } Image;
 
-	Image *img;
+    int imageIndex;
 
-	BITMAPINFO *bmpInfo;
+    BITMAPINFO bmpInfo;
 
 public:
-	// コンストラクタ
-	bitmap();
+    // コンストラクタ
+    bitmap();
 
-	// 取得に成功すればポインタを、失敗すればNullを返す
-	Image *Read_Bmp(const char *fileName);
+    // 取得に成功すればポインタを、失敗すればNullを返す
+    Image *Read_Bmp(const char *fileName);
 
-	// 書き込みに成功すれば0を、失敗すれば1を返す
-	int Write_Bmp(char *fileName);
+    // 書き込みに成功すれば0を、失敗すれば1を返す
+    int Write_Bmp(char *fileName);
 
-	// 描画
-	int Draw_Bmp(HDC hdc, int x, int y);
+    // 描画
+    int Draw_Bmp(HDC hdc, int x, int y);
+    int Draw_Bmp(HDC hdc, const Matrix4x3 &matrix);
 
-	// Imageを作成し、RGB情報もwidth*height分だけ動的に取得する
-	// 成功すればポインタを、失敗すればNullを返す
-	Image *Create_Image(int width, int height);
+    // Imageを作成し、RGB情報もwidth*height分だけ動的に取得する
+    // 成功すればポインタを、失敗すればNullを返す
+    Image *Create_Image(int width, int height);
 
-	Image *Get_Image();
+    Image *Get_Image();
 
-	// Imageを解放する
-	void Free_Image();
+    // Imageを解放する
+    void Free_Image();
 };
 
 #endif /*__BITMAP_H_INCLUDED__*/

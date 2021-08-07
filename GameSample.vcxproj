@@ -144,18 +144,23 @@
     <ClCompile Include="bitmap.cpp" />
     <ClCompile Include="EulerAngles.cpp" />
     <ClCompile Include="FrameRateCalculator.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtil.cpp" />
     <ClCompile Include="Matrix4x3.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RotationMatrix.cpp" />
+    <ClCompile Include="SpriteManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="EulerAngles.h" />
     <ClInclude Include="FrameRateCalculator.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MathUtil.h" />
@@ -163,6 +168,7 @@
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RotationMatrix.h" />
+    <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>

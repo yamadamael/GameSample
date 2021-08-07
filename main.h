@@ -3,9 +3,14 @@
 #include <windows.h>
 #include "bitmap.h"
 #include "FrameRateCalculator.h"
+#include "SpriteManager.h"
 
-bitmap *bmp;
+class GameObject;
+
+GameObject *go;
 FrameRateCalculator *fr;
+
+SpriteManager *spriteManager;
 
 HDC hmdc = NULL;
 HBITMAP hBitmap;
