@@ -3,6 +3,7 @@
 class Vector3;
 class EulerAngles;
 class Quaternion;
+class Matrix4x3;
 
 class RotationMatrix
 {
@@ -16,6 +17,7 @@ public:
 
     // 特定の向きを持つ行列をセットアップする
     void setup(const EulerAngles &orientation);
+    void setup(const Matrix4x3 &matrix, bool isUseScale);
 
     // 四元数から行列をセットアップする
     // この四元数は、指定された座標変換の向きで回転を実行するものとする

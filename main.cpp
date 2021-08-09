@@ -11,6 +11,9 @@
 #include "GameObject.h"
 #include "GameManager.h"
 #include "Vector3.h"
+#include "Quaternion.h"
+#include "EulerAngles.h"
+#include "MathUtil.h"
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -44,6 +47,9 @@ void Create(HWND hwnd)
 
     GameObject *child = new GameObject("Child1");
     child->SetPosition(new Vector3(100, 100, 0));
+    auto rotation = new Quaternion();
+    rotation->setToRotateInertialToObject(EulerAngles(0, 0, kPi));
+    child->SetRotation(rotation);
     child->ReadBmp("bmp1.bmp");
     child->SetParent(go);
 

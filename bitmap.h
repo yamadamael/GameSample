@@ -45,10 +45,6 @@ public:
     int Draw_Bmp(HDC hdc, int x, int y);
     int Draw_Bmp(HDC hdc, const Matrix4x3 &matrix);
 
-    // Imageを作成し、RGB情報もwidth*height分だけ動的に取得する
-    // 成功すればポインタを、失敗すればNullを返す
-    Image *Create_Image(int width, int height);
-
     Image *Get_Image();
 
     // Imageを解放する

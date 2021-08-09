@@ -3,6 +3,7 @@
 #include "MathUtil.h"
 #include "Quaternion.h"
 #include "EulerAngles.h"
+#include "Matrix4x3.h"
 
 // 行列を恒等行列に設定する
 void RotationMatrix::identity()
@@ -37,6 +38,36 @@ void RotationMatrix::setup(const EulerAngles &orientation)
     m31 = -sh * cb + ch * sp * sb;
     m32 = sb + sh * ch * sp * cb;
     m33 = ch * cp;
+}
+
+void RotationMatrix::setup(const Matrix4x3 &matrix, bool isUseScale)
+{
+    if (isUseScale)
+    {
+        m11 = matrix.m11;
+        m12 = matrix.m12;
+        m13 = matrix.m13;
+        m21 = matrix.m21;
+        m22 = matrix.m22;
+        m23 = matrix.m23;
+        m31 = matrix.m31;
+        m32 = matrix.m32;
+        m33 = matrix.m33;
+        return;
+    }
+
+    auto scale = matrix.GetScale();
+    auto oneOverScale = new Vector3(1 / scale->x, 1 / scale->y, 1 / scale->z);
+
+    m11 = matrix.m11 * oneOverScale->x;
+    m12 = matrix.m12 * oneOverScale->x;
+    m13 = matrix.m13 * oneOverScale->x;
+    m21 = matrix.m21 * oneOverScale->y;
+    m22 = matrix.m22 * oneOverScale->y;
+    m23 = matrix.m23 * oneOverScale->y;
+    m31 = matrix.m31 * oneOverScale->z;
+    m32 = matrix.m32 * oneOverScale->z;
+    m33 = matrix.m33 * oneOverScale->z;
 }
 
 // 行列をセットアップする

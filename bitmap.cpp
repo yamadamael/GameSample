@@ -4,6 +4,8 @@
 #include <math.h>
 #include "bitmap.h"
 #include "Logger.h"
+#include "Vector3.h"
+#include "RotationMatrix.h"
 #include "Matrix4x3.h"
 #include "GameManager.h"
 #include "SpriteManager.h"
@@ -79,6 +81,47 @@ int bitmap::Draw_Bmp(HDC hdc, int x, int y)
 
 int bitmap::Draw_Bmp(HDC hdc, const Matrix4x3 &matrix)
 {
+    auto img = Get_Image();
+    auto height = img->height;
+    auto width = img->width;
+    auto halfHeight = height * 0.5f;
+    auto halfWidth = width * 0.5f;
+
+    // メモリ確保
+    LPDWORD lpPixel;
+    auto length = height * width * 4;
+    lpPixel = (LPDWORD)HeapAlloc(GetProcessHeap(), (DWORD)HEAP_ZERO_MEMORY, (SIZE_T)length);
+
+    auto rotationMatrix = matrix.GetRotationMatrix(false);
+
+    for (unsigned int i = 0; i < height; i++)
+    {
+        auto w = i * width;
+        for (unsigned int j = 0; j < width; j++)
+        {
+            auto localPos = Vector3(j - halfWidth, i - halfHeight, 0);
+            auto rotatedPos = rotationMatrix->ObjectToInertial(localPos);
+            rotatedPos.x += halfWidth;
+            rotatedPos.y += halfHeight;
+            if ((0 <= rotatedPos.x && rotatedPos.x < width) &&
+                (0 <= rotatedPos.y && rotatedPos.y < height))
+            {
+                auto rgb = img->data[w + j];
+                auto color = (rgb.r << (8 * 2)) | (rgb.g << (8 * 1)) | rgb.b;
+                auto drawPos = rotatedPos.y * width + rotatedPos.x;
+                lpPixel[(int)std::round(drawPos)] = color;
+            }
+        }
+    }
+
+    // 描画
+    auto position = matrix.GetPosition();
+    StretchDIBits(hdc, position->x, position->y, width, height, 0, 0, width, height, lpPixel, &bmpInfo, DIB_RGB_COLORS, SRCCOPY);
+
+    // メモリ解放
+    auto heap = GetProcessHeap();
+    HeapFree(heap, 0, lpPixel);
+
     return 0;
 }
 

@@ -58,6 +58,10 @@ public:
 
     // 原点を通る任意の平面に関するリフレクションを実行する行列をセットアップする
     void setupReflect(const Vector3 &n);
+
+    Vector3 *GetPosition() const;
+    RotationMatrix *GetRotationMatrix(bool isUseScale) const;
+    Vector3 *GetScale() const;
 };
 
 // 演算子*は点の座標変換に使われ、また行列の連結にも使われる

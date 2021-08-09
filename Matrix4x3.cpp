@@ -454,6 +454,28 @@ void Matrix4x3::setupReflect(const Vector3 &n)
     tx = ty = tz = 0.0f;
 }
 
+Vector3 *Matrix4x3::GetPosition() const
+{
+    return new Vector3(tx, ty, tz);
+}
+
+RotationMatrix *Matrix4x3::GetRotationMatrix(bool isUseScale) const
+{
+    auto rotationMatrix = new RotationMatrix();
+    rotationMatrix->setup(*this, isUseScale);
+
+    return rotationMatrix;
+}
+
+Vector3 *Matrix4x3::GetScale() const
+{
+    auto sx = vectorMag(Vector3(1, 0, 0));
+    auto sy = vectorMag(Vector3(0, 1, 0));
+    auto sz = vectorMag(Vector3(0, 0, 1));
+
+    return new Vector3(sx, sy, sz);
+}
+
 // 点を座標変換する
 Vector3 operator*(const Vector3 &p, const Matrix4x3 &m)
 {

@@ -133,7 +133,8 @@ Matrix4x3 *GameObject::GetWorldMatrix()
     }
 
     auto parentMatrix = Parent->GetWorldMatrix();
-    return &((*parentMatrix) * (*matrix));
+    auto m = (*matrix) * (*parentMatrix);
+    return &m;
 }
 
 void GameObject::UpdateMatrix()
@@ -156,9 +157,8 @@ void GameObject::Draw(const HDC &hdc)
 {
     if (Bitmap != NULL)
     {
-        auto position = GetWorldPosition();
-        Bitmap->Draw_Bmp(hdc, position->x, position->y);
-        Bitmap->Draw_Bmp(hdc, *matrix);
+        auto worldMatrix = *GetWorldMatrix();
+        Bitmap->Draw_Bmp(hdc, worldMatrix);
     }
 
     for (auto itr = Children.begin(); itr != Children.end(); ++itr)
